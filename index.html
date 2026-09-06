@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Catalan Verb Battle</title>
+<style>
+:root{--bg:#090b12;--panel:#121622;--panel2:#181d2b;--text:#f5f7fb;--muted:#9ba5b7;--accent:#7c5cff;--green:#35d07f;--red:#ff5577;--yellow:#ffd166;--blue:#36a3ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#1a1730 0,#090b12 48%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:0}
+.app{max-width:1120px;margin:auto;padding:28px 18px 50px}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:22px}
+.logo{font-size:clamp(25px,5vw,42px);font-weight:900;letter-spacing:-1.5px}.logo span{color:var(--accent)}.sub{color:var(--muted);font-size:13px;margin-top:3px}
+.statsbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.pill{background:#151a28;border:1px solid #272e40;border-radius:999px;padding:9px 13px;font-weight:800;font-size:13px}
+.screen{display:none}.screen.active{display:block}.hero{padding:25px;border:1px solid #292f40;background:linear-gradient(145deg,#151a28,#10131d);border-radius:24px;margin-bottom:18px}
+.hero h1{margin:0 0 7px;font-size:clamp(26px,5vw,44px)}.hero p{margin:0;color:var(--muted);max-width:760px}
+.section-title{display:flex;align-items:end;justify-content:space-between;margin:18px 2px 10px}.section-title h2{margin:0;font-size:15px;letter-spacing:1px}.section-title span{font-size:12px;color:var(--muted)}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mode{position:relative;text-align:left;min-height:150px;padding:19px;border-radius:20px;background:var(--panel);border:1px solid #292f40;color:var(--text);transition:.18s;overflow:hidden}.mode:hover{transform:translateY(-3px);border-color:#555d78;background:var(--panel2)}.mode .num{position:absolute;right:15px;top:13px;color:#4d566d;font-weight:900}.mode .icon{font-size:30px}.mode h3{margin:12px 0 5px;font-size:17px}.mode p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}.mode.challenge{border-color:#443b79}.mode.kahoot{background:linear-gradient(145deg,#18172a,#111622);border-color:#5b4cc2}
+.card{background:var(--panel);border:1px solid #292f40;border-radius:22px;padding:22px}.row{display:flex;gap:10px;flex-wrap:wrap}.field{flex:1;min-width:190px}.field label{display:block;color:var(--muted);font-size:12px;font-weight:700;margin-bottom:7px}select,input{width:100%;background:#0c1019;border:1px solid #30384b;color:var(--text);border-radius:12px;padding:12px;outline:none}input:focus,select:focus{border-color:var(--accent)}
+.actions{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}.primary,.secondary,.danger{border-radius:12px;padding:12px 17px;font-weight:900}.primary{background:var(--accent);color:white}.secondary{background:#22283a;color:white;border:1px solid #343c52}.danger{background:#2a1520;color:#ff9aae;border:1px solid #542438}
+.question{font-size:clamp(28px,6vw,48px);font-weight:900;margin:8px 0}.hint{color:var(--muted);font-size:14px}.timer{font-size:28px;font-weight:900}.progress{height:8px;background:#252b3a;border-radius:99px;overflow:hidden;margin:15px 0}.progress>div{height:100%;background:var(--accent);width:0}
+.answerbox{display:flex;gap:9px;margin-top:18px}.answerbox input{font-size:18px}.feedback{min-height:30px;margin-top:12px;font-weight:800}.good{color:var(--green)}.bad{color:var(--red)}
+.khead{display:flex;justify-content:space-between;gap:12px;align-items:center}.kquestion{text-align:center;padding:18px 0 14px}.kquestion .verb{color:var(--muted);font-size:15px}.kquestion .target{font-size:clamp(28px,7vw,52px);font-weight:950;margin-top:4px}.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}.ans{min-height:95px;border-radius:18px;padding:15px;color:#fff;font-weight:950;font-size:clamp(18px,3vw,25px);border:2px solid transparent}.ans.a{background:#8b3046}.ans.b{background:#2c6290}.ans.c{background:#9a6c18}.ans.d{background:#3d6f48}.ans:hover{filter:brightness(1.12);transform:scale(1.01)}.ans.disabled{pointer-events:none;opacity:.7}.ans.correct{outline:4px solid var(--green)}.ans.wrong{outline:4px solid var(--red)}
+.challenge-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}.challenge-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.challenge-group{border:1px solid #2b3244;border-radius:16px;padding:14px;background:#0f131d}.challenge-group h4{margin:0 0 10px;color:#cfd5e2}.person{display:grid;grid-template-columns:105px 1fr;gap:8px;align-items:center;margin:7px 0}.person label{font-size:12px;color:var(--muted)}.result{text-align:center}.score{font-size:64px;font-weight:950}.big{font-size:22px;font-weight:900}.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:15px}.stat{padding:17px;border:1px solid #2b3244;border-radius:16px;background:#0f131d}.stat b{font-size:25px}.stat small{display:block;color:var(--muted);margin-top:4px}.bar{height:9px;background:#252b3a;border-radius:99px;overflow:hidden;margin-top:7px}.bar i{display:block;height:100%;background:var(--accent)}
+.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:10px 8px;border-bottom:1px solid #272d3c;font-size:13px}.table th{color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#171d2a;border:1px solid #363e54;padding:11px 15px;border-radius:12px;display:none;z-index:20}.toast.show{display:block}
+@media(max-width:850px){.modes{grid-template-columns:1fr 1fr}.challenge-grid{grid-template-columns:1fr}.statgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.app{padding:18px 12px 40px}.top{align-items:flex-start;flex-direction:column}.statsbar{justify-content:flex-start}.modes{grid-template-columns:1fr}.answers{grid-template-columns:1fr}.answerbox{flex-direction:column}.person{grid-template-columns:82px 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div><div class="logo">CATALAN <span>VERB BATTLE</span></div><div class="sub">Entrena. Domina. No vuelvas a fallar el verb.</div></div>
+  <div class="statsbar"><div class="pill">⭐ <span id="xp">0</span> XP</div><div class="pill">🔥 <span id="streak">0</span></div><div class="pill">🏆 Nv. <span id="level">1</span></div></div>
+</header>
+
+<section id="menu" class="screen active">
+  <div class="hero"><h1>Elige tu batalla.</h1><p>7 modos para aprender conjugaciones catalanas. Escribe, sobrevive, compite contra el reloj o juega al estilo Kahoot.</p></div>
+  <div class="section-title"><h2>🎮 7 MODOS DE JUEGO</h2><span>Tu progreso se guarda en este navegador</span></div>
+  <div class="modes">
+    <button class="mode" onclick="startNormal('adaptive')"><span class="num">01</span><div class="icon">🧠</div><h3>Entrenamiento adaptativo</h3><p>Las conjugaciones que peor llevas aparecen más veces.</p></button>
+    <button class="mode" onclick="startNormal('blitz')"><span class="num">02</span><div class="icon">⚡</div><h3>Contrarreloj</h3><p>60 segundos. Responde todo lo que puedas.</p></button>
+    <button class="mode" onclick="startNormal('survival')"><span class="num">03</span><div class="icon">❤️</div><h3>Supervivencia</h3><p>3 vidas. Un error te acerca al game over.</p></button>
+    <button class="mode challenge" onclick="openTenseSetup()"><span class="num">04</span><div class="icon">⏱️</div><h3>Domina un tiempo</h3><p>Elige verbo + tiempo y completa las 6 personas.</p></button>
+    <button class="mode challenge" onclick="openVerbSetup()"><span class="num">05</span><div class="icon">📚</div><h3>Domina un verbo</h3><p>Completa ese verbo en los 5 tiempos disponibles.</p></button>
+    <button class="mode kahoot" onclick="startKahoot()"><span class="num">06</span><div class="icon">🏆</div><h3>Kahoot · Batalla</h3><p>4 respuestas, 10 segundos y combo. ¡A ver cuánto haces!</p></button>
+    <button class="mode" onclick="showStats()"><span class="num">07</span><div class="icon">📊</div><h3>Estadísticas</h3><p>Maestría, errores, aciertos y tus verbos débiles.</p></button>
+  </div>
+</section>
+
+<section id="setup" class="screen">
+  <div class="card"><div class="section-title"><h2 id="setupTitle">CONFIGURA LA BATALLA</h2></div><div class="row">
+    <div class="field"><label>VERBO</label><select id="setupVerb"></select></div>
+    <div class="field"><label>TIEMPO</label><select id="setupTense"></select></div>
+  </div><div class="actions"><button class="primary" onclick="beginChallenge()">⚔️ Empezar</button><button class="secondary" onclick="goMenu()">← Menú</button></div></div>
+</section>
+
+<section id="game" class="screen">
+  <div class="card">
+    <div class="khead"><div><div class="hint" id="modeLabel"></div><div class="timer" id="timer"></div></div><div class="pill">❤️ <span id="lives">∞</span></div></div>
+    <div class="progress"><div id="progress"></div></div>
+    <div class="hint" id="prompt"></div><div class="question" id="question"></div>
+    <div class="hint" id="meaning"></div>
+    <div class="answerbox"><input id="answer" autocomplete="off" placeholder="Escribe la conjugación..." onkeydown="if(event.key==='Enter')submitAnswer()"><button class="primary" onclick="submitAnswer()">Responder</button></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="actions"><button class="secondary" onclick="goMenu()">Abandonar</button></div>
+  </div>
+</section>
+
+<section id="kahoot" class="screen">
+  <div class="card">
+    <div class="khead"><div><div class="hint">🏆 KAHOOT · BATALLA</div><div class="timer">⏱️ <span id="kTimer">10</span>s</div></div><div class="pill">🔥 <span id="kCombo">0</span> combo</div></div>
+    <div class="progress"><div id="kProgress"></div></div>
+    <div class="kquestion"><div class="verb" id="kVerb"></div><div class="target" id="kQuestion"></div><div class="hint" id="kMeaning"></div></div>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="kFeedback"></div>
+    <div class="actions"><button class="secondary" onclick="goMenu()">Abandonar</button></div>
+  </div>
+</section>
+
+<section id="challenge" class="screen">
+  <div class="card"><div class="challenge-head"><div><div class="hint" id="challengeMode"></div><div class="big" id="challengeTitle"></div></div><button class="secondary" onclick="goMenu()">← Menú</button></div>
+    <div id="challengeGrid" class="challenge-grid"></div>
+    <div class="actions"><button class="primary" onclick="checkChallenge()">✅ Corregir todo</button></div>
+    <div id="challengeFeedback" class="feedback"></div>
+  </div>
+</section>
+
+<section id="result" class="screen">
+  <div class="card result"><div class="hint" id="resultMode"></div><div class="score" id="resultScore"></div><div class="big" id="resultTitle"></div><p id="resultText" class="hint"></p><div class="actions" style="justify-content:center"><button class="primary" onclick="goMenu()">🎮 Seguir jugando</button><button class="secondary" onclick="showStats()">📊 Ver estadísticas</button></div></div>
+</section>
+
+<section id="stats" class="screen">
+  <div class="card"><div class="section-title"><h2>📊 TU PROGRESO</h2><span id="statsLevel"></span></div>
+    <div class="statgrid"><div class="stat"><b id="sXP">0</b><small>XP total</small></div><div class="stat"><b id="sCorrect">0</b><small>Aciertos</small></div><div class="stat"><b id="sWrong">0</b><small>Errores</small></div><div class="stat"><b id="sBest">0</b><small>Mejor racha</small></div></div>
+    <table class="table"><thead><tr><th>Verbo · tiempo</th><th>Maestría</th><th>Errores</th></tr></thead><tbody id="statsBody"></tbody></table>
+    <div class="actions"><button class="secondary" onclick="goMenu()">← Menú</button><button class="danger" onclick="resetData()">Borrar progreso</button></div>
+  </div>
+</section>
+</div><div id="toast" class="toast"></div>
+
+<script>
+const PEOPLE=['jo','tu','ell/ella','nosaltres','vosaltres','ells/elles'];
+const PERSON_HINT=['yo','tú','él/ella','nosotros/as','vosotros/as','ellos/as'];
+const TENSES={present:'Present',imperfect:'Imperfet',future:'Futur',conditional:'Condicional',past:'Passat perifràstic'};
+const VERBS={
+parlar:{es:'hablar',present:['parlo','parles','parla','parlem','parleu','parlen'],imperfect:['parlava','parlaves','parlava','parlàvem','parlàveu','parlaven'],future:['parlaré','parlaràs','parlarà','parlarem','parlareu','parlaran'],conditional:['parlaria','parlaries','parlaria','parlaríem','parlaríeu','parlarien'],past:['vaig parlar','vas parlar','va parlar','vam parlar','vau parlar','van parlar']},
+tenir:{es:'tener',present:['tinc','tens','té','tenim','teniu','tenen'],imperfect:['tenia','tenies','tenia','teníem','teníeu','tenien'],future:['tindré','tindràs','tindrà','tindrem','tindreu','tindran'],conditional:['tindria','tindries','tindria','tindríem','tindríeu','tindrien'],past:['vaig tenir','vas tenir','va tenir','vam tenir','vau tenir','van tenir']},
+fer:{es:'hacer',present:['faig','fas','fa','fem','feu','fan'],imperfect:['feia','feies','feia','fèiem','fèieu','feien'],future:['faré','faràs','farà','farem','fareu','faran'],conditional:['faria','faries','faria','faríem','faríeu','farien'],past:['vaig fer','vas fer','va fer','vam fer','vau fer','van fer']},
+anar:{es:'ir',present:['vaig','vas','va','anem','aneu','van'],imperfect:['anava','anaves','anava','anàvem','anàveu','anaven'],future:['aniré','aniràs','anirà','anirem','anireu','aniran'],conditional:['aniria','aniries','aniria','aniríem','aniríeu','anirien'],past:['vaig anar','vas anar','va anar','vam anar','vau anar','van anar']},
+ser:{es:'ser',present:['soc','ets','és','som','sou','són'],imperfect:['era','eres','era','érem','éreu','eren'],future:['seré','seràs','serà','serem','sereu','seran'],conditional:['seria','series','seria','seríem','seríeu','serien'],past:['vaig ser','vas ser','va ser','vam ser','vau ser','van ser']},
+estar:{es:'estar',present:['estic','estàs','està','estem','esteu','estan'],imperfect:['estava','estaves','estava','estàvem','estàveu','estaven'],future:['estaré','estaràs','estarà','estarem','estareu','estaran'],conditional:['estaria','estaries','estaria','estaríem','estaríeu','estarien'],past:['vaig estar','vas estar','va estar','vam estar','vau estar','van estar']},
+poder:{es:'poder',present:['puc','pots','pot','podem','podeu','poden'],imperfect:['podia','podies','podia','podíem','podíeu','podien'],future:['podré','podràs','podrà','podrem','podreu','podran'],conditional:['podria','podries','podria','podríem','podríeu','podrien'],past:['vaig poder','vas poder','va poder','vam poder','vau poder','van poder']},
+voler:{es:'querer',present:['vull','vols','vol','volem','voleu','volen'],imperfect:['volia','volies','volia','volíem','volíeu','volien'],future:['voldré','voldràs','voldrà','voldrem','voldreu','voldran'],conditional:['voldria','voldries','voldria','voldríem','voldríeu','voldrien'],past:['vaig voler','vas voler','va voler','vam voler','vau voler','van voler']}
+};
+const ITEMS=[];
+for(const v in VERBS) for(const t in TENSES) for(let i=0;i<6;i++) ITEMS.push({id:v+'|'+t+'|'+i,v,t,i,answer:VERBS[v][t][i]});
+
+let data=JSON.parse(localStorage.getItem('cvbData')||'null')||{xp:0,correct:0,wrong:0,bestStreak:0,streak:0,mastery:{},seen:{},mistakes:{}};
+let state={mode:null,current:null,queue:[],index:0,score:0,lives:3,deadline:0,interval:null,kTimer:null,kIndex:0,kScore:0,kCombo:0,kQuestions:[]};
+
+function save(){localStorage.setItem('cvbData',JSON.stringify(data));updateHeader()}
+function updateHeader(){document.getElementById('xp').textContent=data.xp;document.getElementById('streak').textContent=data.streak;document.getElementById('level').textContent=Math.floor(data.xp/100)+1}
+function screen(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function goMenu(){clearTimers();screen('menu');updateHeader()}
+function clearTimers(){if(state.interval)clearInterval(state.interval);if(state.kTimer)clearInterval(state.kTimer);state.interval=null;state.kTimer=null}
+function norm(s){return s.trim().toLowerCase().normalize('NFC').replace(/\s+/g,' ')}
+function mastery(item){return data.mastery[item.id]??0}
+function weightedItem(){let pool=ITEMS.map(x=>{let m=mastery(x),mist=data.mistakes[x.id]||0,seen=data.seen[x.id]||0;let w=(1+(100-m)/15)*(1+mist*.7)/(1+seen*.04);return [x,w]});let total=pool.reduce((a,b)=>a+b[1],0),r=Math.random()*total;for(const [x,w] of pool){r-=w;if(r<=0)return x}return ITEMS[Math.floor(Math.random()*ITEMS.length)]}
+function record(item,ok){data.seen[item.id]=(data.seen[item.id]||0)+1;if(ok){data.correct++;data.mastery[item.id]=Math.min(100,mastery(item)+12);data.xp+=10+Math.min(20,data.streak*2);data.streak++;data.bestStreak=Math.max(data.bestStreak,data.streak)}else{data.wrong++;data.mistakes[item.id]=(data.mistakes[item.id]||0)+1;data.mastery[item.id]=Math.max(0,mastery(item)-9);data.streak=0}save()}
+function startNormal(mode){
+clearTimers();state={...state,mode,index:0,score:0,lives:mode==='survival'?3:Infinity,deadline:0};screen('game');
+document.getElementById('modeLabel').textContent=mode==='adaptive'?'🧠 ENTRENAMIENTO ADAPTATIVO':mode==='blitz'?'⚡ CONTRARRELOJ · 60 S':'❤️ SUPERVIVENCIA · 3 VIDAS';
+document.getElementById('lives').textContent=mode==='survival'?3:'∞';document.getElementById('feedback').textContent='';
+if(mode==='blitz'){state.deadline=Date.now()+60000;state.interval=setInterval(()=>{let left=Math.max(0,state.deadline-Date.now());document.getElementById('timer').textContent=Math.ceil(left/1000)+'s';if(!left)finishNormal()},100)}
+else document.getElementById('timer').textContent='';
+nextNormal();
+}
+function nextNormal(){
+if(state.mode==='blitz'&&Date.now()>=state.deadline)return finishNormal();
+state.current=weightedItem();state.index++;let x=state.current;
+document.getElementById('prompt').textContent=VERBS[x.v].es+' · '+TENSES[x.t]+' · '+PERSON_HINT[x.i];
+document.getElementById('question').textContent=x.v;
+document.getElementById('meaning').textContent='Escribe la forma correcta en catalán.';
+document.getElementById('progress').style.width=(state.mode==='blitz'?'100%':Math.min(100,state.index/20*100))+'%';
+document.getElementById('answer').value='';document.getElementById('answer').focus();
+}
+function submitAnswer(){
+if(!state.current)return;let inp=document.getElementById('answer'),val=norm(inp.value);if(!val)return;
+let ok=val===norm(state.current.answer);record(state.current,ok);
+let fb=document.getElementById('feedback');fb.className='feedback '+(ok?'good':'bad');fb.textContent=ok?'✓ Correcte! +XP':('✗ Era: '+state.current.answer);
+if(!ok&&state.mode==='survival'){state.lives--;document.getElementById('lives').textContent=state.lives;if(state.lives<=0)return setTimeout(finishNormal,500)}
+state.score+=ok?1:0;
+if(state.mode!=='blitz'&&state.index>=20)return setTimeout(finishNormal,500);
+setTimeout(nextNormal,260);
+}
+function finishNormal(){clearTimers();screen('result');document.getElementById('resultMode').textContent=document.getElementById('modeLabel').textContent;let total=state.mode==='blitz'?state.score:state.index;let pct=total?Math.round(state.score/total*100):0;document.getElementById('resultScore').textContent=state.score+' ✓';document.getElementById('resultTitle').textContent=pct>=80?'🔥 Brutal. Vas molt bé.':pct>=60?'💪 Bon treball.':'🧠 A seguir entrenant.';document.getElementById('resultText').textContent='Aciertos: '+state.score+' de '+total+' · Precisión: '+pct+'% · Racha actual: '+data.streak}
+
+function fillSelects(){
+let sv=document.getElementById('setupVerb'),st=document.getElementById('setupTense');sv.innerHTML=Object.keys(VERBS).map(v=>`<option value="${v}">${v} — ${VERBS[v].es}</option>`).join('');st.innerHTML=Object.entries(TENSES).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')
+}
+function openTenseSetup(){state.challengeType='tense';fillSelects();document.getElementById('setupTitle').textContent='⏱️ DOMINA UN TIEMPO';document.getElementById('setupTense').disabled=false;screen('setup')}
+function openVerbSetup(){state.challengeType='verb';fillSelects();document.getElementById('setupTitle').textContent='📚 DOMINA UN VERBO';document.getElementById('setupTense').disabled=true;screen('setup')}
+function beginChallenge(){let v=document.getElementById('setupVerb').value,t=document.getElementById('setupTense').value;state.challengeV=v;state.challengeT=t;renderChallenge();screen('challenge')}
+function renderChallenge(){
+let v=state.challengeV,t=state.challengeT,grid=document.getElementById('challengeGrid');grid.innerHTML='';
+if(state.challengeType==='tense'){
+document.getElementById('challengeMode').textContent='⏱️ 6 CONJUGACIONES';document.getElementById('challengeTitle').textContent=v+' · '+TENSES[t];
+let html='<div class="challenge-group"><h4>'+TENSES[t]+' · '+v+'</h4>';
+for(let i=0;i<6;i++)html+=personInput(v,t,i);
+html+='</div>';grid.innerHTML=html;
+}else{
+document.getElementById('challengeMode').textContent='📚 30 CONJUGACIONES';document.getElementById('challengeTitle').textContent=v+' · '+VERBS[v].es;
+grid.innerHTML=Object.keys(TENSES).map(t=>`<div class="challenge-group"><h4>${TENSES[t]}</h4>${[0,1,2,3,4,5].map(i=>personInput(v,t,i)).join('')}</div>`).join('');
+}}
+function personInput(v,t,i){return `<div class="person"><label>${PERSON_HINT[i]}<br><span>${PEOPLE[i]}</span></label><input data-v="${v}" data-t="${t}" data-i="${i}" autocomplete="off" placeholder="Català..."></div>`}
+function checkChallenge(){
+let inputs=[...document.querySelectorAll('#challengeGrid input')],ok=0;inputs.forEach(inp=>{let x=VERBS[inp.dataset.v],ans=x[inp.dataset.t][+inp.dataset.i],good=norm(inp.value)===norm(ans);if(good){ok++;inp.style.borderColor='var(--green)';inp.style.background='#10251b'}else{inp.style.borderColor='var(--red)';inp.style.background='#28131a';inp.value=ans}record(ITEMS.find(z=>z.v===inp.dataset.v&&z.t===inp.dataset.t&&z.i==+inp.dataset.i),good)});let pct=Math.round(ok/inputs.length*100);document.getElementById('challengeFeedback').className='feedback '+(pct>=70?'good':'bad');document.getElementById('challengeFeedback').textContent=`${ok}/${inputs.length} correctas · ${pct}% · Las rojas muestran la respuesta correcta.`;if(pct===100)data.xp+=50;save()}
+
+function startKahoot(){
+clearTimers();state.kIndex=0;state.kScore=0;state.kCombo=0;state.kQuestions=Array.from({length:15},()=>weightedItem());screen('kahoot');nextKahoot();
+}
+function nextKahoot(){
+if(state.kIndex>=state.kQuestions.length)return finishKahoot();
+let item=state.kQuestions[state.kIndex++],correct=item.answer,opts=new Set([correct]);while(opts.size<4){let other=ITEMS[Math.floor(Math.random()*ITEMS.length)].answer;opts.add(other)}opts=[...opts].sort(()=>Math.random()-.5);
+document.getElementById('kVerb').textContent=`${item.v} · ${TENSES[item.t]} · ${PERSON_HINT[item.i]} · “${VERBS[item.v].es}”`;
+document.getElementById('kQuestion').textContent='Quina és la forma correcta?';
+document.getElementById('kMeaning').textContent='Escoge la conjugación correcta.';
+document.getElementById('kCombo').textContent=state.kCombo;document.getElementById('kProgress').style.width=(state.kIndex/state.kQuestions.length*100)+'%';document.getElementById('kFeedback').textContent='';
+let wrap=document.getElementById('answers');wrap.innerHTML=opts.map((o,i)=>`<button class="ans ${['a','b','c','d'][i]}" onclick="answerKahoot(this,${JSON.stringify(o)},${JSON.stringify(correct)})">${o}</button>`).join('');
+let left=10;document.getElementById('kTimer').textContent=left;state.kTimer=setInterval(()=>{left--;document.getElementById('kTimer').textContent=left;if(left<=0){clearInterval(state.kTimer);state.kTimer=null;answerKahoot(null,'',correct,true)}},1000)
+}
+function answerKahoot(btn,chosen,correct,timeout=false){
+if(state.kTimer){clearInterval(state.kTimer);state.kTimer=null}
+document.querySelectorAll('.ans').forEach(b=>b.classList.add('disabled'));
+let item=state.kQuestions[state.kIndex-1],ok=norm(chosen)===norm(correct);record(item,ok);
+if(ok){state.kCombo++;state.kScore+=100+Math.min(500,state.kCombo*50);if(btn)btn.classList.add('correct');document.getElementById('kFeedback').className='feedback good';document.getElementById('kFeedback').textContent='✓ Correcte! +'+(100+state.kCombo*50)}
+else{state.kCombo=0;if(btn)btn.classList.add('wrong');document.getElementById('kFeedback').className='feedback bad';document.getElementById('kFeedback').textContent=timeout?'⏰ Temps! Era: '+correct:'✗ Era: '+correct}
+document.getElementById('kCombo').textContent=state.kCombo;setTimeout(nextKahoot,650)
+}
+function finishKahoot(){clearTimers();screen('result');document.getElementById('resultMode').textContent='🏆 KAHOOT · BATALLA';document.getElementById('resultScore').textContent=state.kScore;document.getElementById('resultTitle').textContent=state.kScore>=3500?'👑 ¡CAMPEÓN!':state.kScore>=2000?'🔥 Muy buena partida':'💪 Sube tu combo';document.getElementById('resultText').textContent='15 preguntas · Cada acierto aumenta el combo y la puntuación.'}
+
+function showStats(){clearTimers();screen('stats');let lvl=Math.floor(data.xp/100)+1;document.getElementById('statsLevel').textContent='Nivel '+lvl;document.getElementById('sXP').textContent=data.xp;document.getElementById('sCorrect').textContent=data.correct;document.getElementById('sWrong').textContent=data.wrong;document.getElementById('sBest').textContent=data.bestStreak;let body=document.getElementById('statsBody');body.innerHTML=ITEMS.map(x=>({x,m:mastery(x),e:data.mistakes[x.id]||0})).sort((a,b)=>a.m-b.m).slice(0,20).map(o=>`<tr><td>${o.x.v} · ${TENSES[o.x.t]} · ${PERSON_HINT[o.x.i]}</td><td>${o.m}%<div class="bar"><i style="width:${o.m}%"></i></div></td><td>${o.e}</td></tr>`).join('')}
+function resetData(){if(confirm('¿Borrar todo el progreso?')){data={xp:0,correct:0,wrong:0,bestStreak:0,streak:0,mastery:{},seen:{},mistakes:{}};save();showStats()}}
+fillSelects();updateHeader();
+</script>
+</body></html>
